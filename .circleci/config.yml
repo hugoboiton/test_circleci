@@ -7,7 +7,7 @@ jobs:
       - checkout
       - docker/check
       - docker/build:
-          image: trambocloud/nginx
+          image: hboiton23/hboiton_nginx
           tag: "latest,$CIRCLE_SHA1"
       - docker/push:
           digest-path: /tmp/digest.txt
@@ -15,7 +15,7 @@ jobs:
           tag: "latest,$CIRCLE_SHA1"
       - run:
           command: |
-            echo "Digest is: $(</tmp/digest.txt)"
+            echo "hugo is: $(</tmp/digest.txt)"
             echo "hello world!!!"
   deploy:
     docker:
@@ -29,7 +29,7 @@ jobs:
       - run:
           name: Deploy
           command: |
-            ecs deploy $ECS_CLUSTER_NAME $ECS_SERVICE --image website-service trambocloud/nginx:$CIRCLE_SHA1 --timeout 1200 --ignore-warnings --region $AWS_REGION
+            ecs deploy $ECS_CLUSTER_NAME $ECS_SERVICE --image website-service hboiton23/hboiton_nginx:$CIRCLE_SHA1 --timeout 1200 --ignore-warnings --region $AWS_REGION
 orbs:
   docker: circleci/docker@1.4.0
 workflows:

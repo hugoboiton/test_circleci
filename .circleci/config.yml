@@ -11,7 +11,7 @@ jobs:
           tag: "latest,$CIRCLE_SHA1"
       - docker/push:
           digest-path: /tmp/digest.txt
-          image: trambocloud/nginx
+          image: hboiton23/hboiton_nginx
           tag: "latest,$CIRCLE_SHA1"
       - run:
           command: |

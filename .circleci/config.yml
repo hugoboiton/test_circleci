@@ -19,7 +19,7 @@ jobs:
               mkdir folder_hello
               echo "echo 'hello world!!! by hboiton'">folder_hello/hello.sh
               chmod +x folder_hello/hello.sh
-      - persist_to_worpace:
+      - persist_to_workspace:
             root : .
             paths:
               - folder_hello

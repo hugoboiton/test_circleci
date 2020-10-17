@@ -1,10 +1,18 @@
 version: 2.1
 jobs:
-  job_1:
-    docker:
-      - image: circleci/php:7.3.12
+  build-and-push:
+    executor: docker/docker
     steps:
+      - setup_remote_docker
       - checkout
+      - docker/check
+      - docker/build:
+          image: hboiton23/hboiton_nginx
+          tag: "latest,$CIRCLE_SHA1"
+      - docker/push:
+          digest-path: /tmp/digest.txt
+          image: hboiton23/hboiton_nginx
+          tag: "latest,$CIRCLE_SHA1"
       - run:
           name: Generate Some File
           command: |
@@ -15,11 +23,19 @@ jobs:
           root: .
           paths:
             - folder
-  job_2:
+  deploy:
     docker:
-      - image: circleci/golang:1.13.8
+      - image: circleci/python:3.7
     steps:
       - checkout
+      - run:
+         name: Install dependencies
+         command: |
+           pip install ecs-deploy
+      - run:
+          name: Deploy
+          command: |
+            ecs deploy $ECS_CLUSTER_NAME $ECS_SERVICE --image website-service hboiton23/hboiton_nginx:$CIRCLE_SHA1 --timeout 1200 --ignore-warnings --region $AWS_REGION
       - attach_workspace:
           at: tmp
       - run:
@@ -30,7 +46,7 @@ workflows:
   version: 2
   document:
     jobs:
-      - job_1
-      - job_2:
+      - build-and-push
+      - deploy:
           requires:
-            - job_1
+            - build-and-push

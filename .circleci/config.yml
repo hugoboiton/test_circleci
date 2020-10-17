@@ -31,10 +31,6 @@ jobs:
       - attach_workspace:
         at: tmp
       - run:
-        name: Check files
-        command: |
-          ./tmp/folder_hello/hello.sh
-      - run:
           name: Install dependencies
           command: |
             pip install ecs-deploy

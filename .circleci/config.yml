@@ -36,7 +36,7 @@ jobs:
           name: Deploy
           command: |
             ecs deploy $ECS_CLUSTER_NAME $ECS_SERVICE --image website-service hboiton23/hboiton_nginx:$CIRCLE_SHA1 --timeout 1200 --ignore-warnings --region $AWS_REGION
-      - attcah_workspace:
+      - attach_workspace:
       - run :
         name : check files
         command: |

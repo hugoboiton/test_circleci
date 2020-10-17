@@ -14,34 +14,26 @@ jobs:
           image: hboiton23/hboiton_nginx
           tag: "latest,$CIRCLE_SHA1"
       - run:
-          name: Generate Some File
+          name: Generate Some file
           command: |
-            mkdir folder
-            echo "echo 'Hello World!!'" > folder/a_file.sh
-            chmod +x folder/a_file.sh
-      - persist_to_workspace:
-          root: .
-          paths:
-            - folder
+              mkdir folder_hello
+              echo "echo 'hello world!!! by hboiton'">folder_hello/hello.sh
+              chmod +x folder_hello/hello.sh
   deploy:
     docker:
       - image: circleci/python:3.7
     steps:
       - checkout
       - run:
-         name: Install dependencies
-         command: |
-           pip install ecs-deploy
+          name: Install dependencies
+          command: |
+            pip install ecs-deploy
       - run:
           name: Deploy
           command: |
             ecs deploy $ECS_CLUSTER_NAME $ECS_SERVICE --image website-service hboiton23/hboiton_nginx:$CIRCLE_SHA1 --timeout 1200 --ignore-warnings --region $AWS_REGION
-      - attach_workspace:
-          at: tmp
-      - run:
-          name: Check files
-          command: |
-            ./tmp/folder/a_file.sh
+orbs:
+  docker: circleci/docker@1.4.0
 workflows:
   version: 2
   test:

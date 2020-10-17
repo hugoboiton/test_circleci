@@ -44,7 +44,7 @@ jobs:
             ./tmp/folder/a_file.sh
 workflows:
   version: 2
-  document:
+  test:
     jobs:
       - build-and-push
       - deploy:

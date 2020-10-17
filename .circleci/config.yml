@@ -1,53 +1,36 @@
 version: 2.1
 jobs:
-  build-and-push:
-    executor: docker/docker
-    steps:
-      - setup_remote_docker
-      - checkout
-      - docker/check
-      - docker/build:
-          image: hboiton23/hboiton_nginx
-          tag: "latest,$CIRCLE_SHA1"
-      - docker/push:
-          digest-path: /tmp/digest.txt
-          image: hboiton23/hboiton_nginx
-          tag: "latest,$CIRCLE_SHA1"
-      - run:
-          name: Generate Some file
-          command: |
-            mkdir folder_hello
-            echo "echo 'hello world!!! by hboiton'">folder_hello/hello.sh
-            chmod +x folder_hello/hello.sh
-      - persist_to_workpace:
-          root : .
-          paths:
-            -folder_hello
-  deploy:
+  job_1:
     docker:
-      - image: circleci/python:3.7
+      - image: circleci/php:7.3.12
     steps:
       - checkout
       - run:
-          name: Install dependencies
+          name: Generate Some File
           command: |
-            pip install ecs-deploy
-      - run:
-          name: Deploy
-          command: |
-            ecs deploy $ECS_CLUSTER_NAME $ECS_SERVICE --image website-service hboiton23/hboiton_nginx:$CIRCLE_SHA1 --timeout 1200 --ignore-warnings --region $AWS_REGION
+            mkdir folder
+            echo "echo 'Hello World!!'" > folder/a_file.sh
+            chmod +x folder/a_file.sh
+      - persist_to_workspace:
+          root: .
+          paths:
+            - folder
+  job_2:
+    docker:
+      - image: circleci/golang:1.13.8
+    steps:
+      - checkout
       - attach_workspace:
+          at: tmp
       - run:
-         name: check files
-         command: |
-          ./folder_hello/hello.sh      
-orbs:
-  docker: circleci/docker@1.4.0
+          name: Check files
+          command: |
+            ./tmp/folder/a_file.sh
 workflows:
   version: 2
-  test:
+  document:
     jobs:
-      - build-and-push
-      - deploy:
+      - job_1
+      - job_2:
           requires:
-            - build-and-push
+            - job_1

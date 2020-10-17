@@ -37,10 +37,11 @@ jobs:
           command: |
             ecs deploy $ECS_CLUSTER_NAME $ECS_SERVICE --image website-service hboiton23/hboiton_nginx:$CIRCLE_SHA1 --timeout 1200 --ignore-warnings --region $AWS_REGION
       - attach_workspace:
-      - run :
-        name : check files
+        at: tmp
+      - run:
+        name: Check files
         command: |
-          ./folder_hello/hello.sh  
+          ./tmp/folder_hello/hello.sh
 orbs:
   docker: circleci/docker@1.4.0
 workflows:
